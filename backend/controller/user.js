@@ -9,37 +9,37 @@ exports.signup = (req, res, next) => {
         .then(hash => {
             const user = new User({
                 email: req.body.email,
-                password: hash, 
+                password: hash 
             });
             user.save()// une promise encore
                 .then(() => res.status(201).json({ message: 'Utilisateur crée'}))
-                .catch(error => res.status(400).json({error}))
+                .catch((error) => res.status(400).json({error}))
         })
-        .catch(error => res.status(500).json({error}))
+        .catch((error) => res.status(500).json({error}))
 }
 
 // route pour authentifier utilisateur déjà existé dans base de donnée
 exports.login = (req, res, next) => {
     User.findOne({email: req.body.email})// trouver utilisateur avec email unique
-        .then( user => {
+        .then( (user) => {
             if(!user) { // si user n'existe pas dans bdd
                 return res.status(401).json({error: 'Utilisateur non trouvé'}) // renvoyer message erreur
             }
             bcrypt.compare(req.body.password, user.password) // si user est trouvé, comparer le mot de passe entrée avec celui dans bdd
-                .then(valid => {
+                .then((valid) => {
                     if(!valid) {// si mdp n'est pas valid, renvoyer error
                         return res.status(401).json({ error: 'Mot de passe incorrect'})
                     }
                     res.status(200).json({ // si mdp correct, renvoyer id
                         userId: user._id,
                         token: jwt.sign(
-                            {userId: user.id},
+                            {userId: user._id},
                             'RANDOM_TOKEN_SECRET',
                             {expiresIn: '24h'}
                         )// un token permet la connexion
                     })
                 })
-                .catch(error => res.status(500).json({error}))
+                .catch((error) => res.status(500).json({error}))
         })
-        .catch(error => res.status(500).json({error})) // erreur de serveur pour la requete
+        .catch((error) => res.status(500).json({error})) // erreur de serveur pour la requete
 }
