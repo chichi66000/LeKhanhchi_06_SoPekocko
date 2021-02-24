@@ -7,7 +7,7 @@ const bruteforce = new ExpressBrute(store);
 
 const userCtrl = require('../controller/user');
 
-const bodyParser = require('body-parser');// validator pour formulaire login
+const bodyParser = require('body-parser');// validator pour formulaire signup
 const jsonParser = bodyParser.json();
 const {check, valideResult} = require('express-validator'); 
 router.post('/signup', jsonParser, [

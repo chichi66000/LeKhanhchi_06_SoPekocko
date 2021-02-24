@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
+
 // pour une protection api
 const helmet = require('helmet');
 const cors = require('cors');
@@ -10,14 +11,14 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100  // limit each IP to 100 requests per windowMs
 });
+require('dotenv').config(); // load .env file pour garder secret les infos confidentiels
 
 const app = express();
 
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
 
-
-mongoose.connect('mongodb+srv://lekhanhchi:Elisekhanh1984@cluster0.k0wlm.mongodb.net/projet6?retryWrites=true&w=majority',
+mongoose.connect(process.env.MGD_URI,
  {useNewUrlParser:true,
   useUnifiedTopology:true})
   .then(() => console.log('Connexion à MongoDB réussie !'))
