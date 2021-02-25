@@ -3,9 +3,26 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
+const {body, validationResult} = require('express-validator'); 
+
+
 // créer une route pour enregistrer nouvel utilisateur
-exports.signup = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10) // fonction asynchrone qui renvoie une promise avec hash comme response
+exports.signup = (
+    body ('email', 'Email is not valid') // valider email et password avant créer nouvel user
+        .isEmail()
+        .bail()
+        .normalizeEmail(),
+    body('password', 'Password must be +8 characters long')
+        .isLength({min: 8})
+        .isUppercase({min:1})
+        ,
+    (req, res, next) => {
+        const errors = validationResult(req)
+        if(!errors.isEmpty()) { 
+        return res.status(400).json({errors: errors.array()})
+            }
+
+        bcrypt.hash(req.body.password, 10) // fonction asynchrone qui renvoie une promise avec hash comme response
         .then(hash => {
             const user = new User({
                 email: req.body.email,
@@ -16,7 +33,7 @@ exports.signup = (req, res, next) => {
                 .catch((error) => res.status(400).json({error}))
         })
         .catch((error) => res.status(500).json({error}))
-}
+})
 
 // route pour authentifier utilisateur déjà existé dans base de donnée
 exports.login = (req, res, next) => {
