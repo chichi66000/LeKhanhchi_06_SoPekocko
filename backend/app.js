@@ -12,7 +12,7 @@ const limiter = rateLimit({
   max: 100  // limit each IP to 100 requests per windowMs
 });
 require('dotenv').config(); // load .env file pour garder secret les infos confidentiels
-
+const expressSanitizer = require('express-sanitizer')
 const app = express();
 
 const sauceRoutes = require('./routes/sauce');
@@ -36,6 +36,7 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use(cors({origin: 'http://localhost:4200'}));
 app.use(limiter);
+app.use (expressSanitizer());
 
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
