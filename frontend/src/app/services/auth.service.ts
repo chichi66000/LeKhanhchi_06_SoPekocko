@@ -17,7 +17,7 @@ export class AuthService {
 
   createUser(email: string, password: string) {
     return new Promise((resolve, reject) => {
-      this.http.post('http://localhost:3000/api/auth/signup', {email: email, password: password}).subscribe(
+      this.http.post('https://so-pekocko-sauce-piquante.herokuapp.com/api/auth/signup', {email: email, password: password}).subscribe(
         (response: { message: string }) => {
           resolve(response);
         },
@@ -38,7 +38,7 @@ export class AuthService {
 
   loginUser(email: string, password) {
     return new Promise((resolve, reject) => {
-      this.http.post('http://localhost:3000/api/auth/login', {email: email, password: password}).subscribe(
+      this.http.post('https://so-pekocko-sauce-piquante.herokuapp.com/api/auth/login', {email: email, password: password}).subscribe(
         (response: {userId: string, token: string}) => {
           this.userId = response.userId;
           this.authToken = response.token;
