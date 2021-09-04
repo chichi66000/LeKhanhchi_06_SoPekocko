@@ -28,13 +28,24 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTION');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // res.setHeader("Content-Security-Policy", "default-src 'self' https://use.fontawesome.com  ; script-src 'self' 'unsafe-inline' 'unsafe-eval'");
     next();
 })
 
 app.use(bodyParser.json());
 
-app.use(helmet());
-app.use(cors({origin: 'http://localhost:4200'}));
+app.use(helmet.contentSecurityPolicy({
+  useDefaults: true,
+  directives: {
+    "default-src": ["'self'", "https://fonts.gstatic.com/", "https://use.fontawesome.com", "https://fonts.googleapis.com", "*"],
+    "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+    "style-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "fonts.googleapis.com", "use.fontawesome.com"],
+    "font-src": ["https://fonts.gstatic.com/", "https://use.fontawesome.com"]
+  },
+}));
+app.use(cors());
 app.use(limiter);
 app.use (expressSanitizer());
 
@@ -42,5 +53,9 @@ app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
+app.use(express.static(__dirname + '/public'))
+
+// handle Angular as entry point
+app.get('*', (req, res) => res.sendFile(path.join(__dirname + '/public/index.html')));
 
 module.exports = app;
